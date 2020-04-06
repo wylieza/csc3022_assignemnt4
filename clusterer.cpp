@@ -6,21 +6,53 @@
 
 
 //Functions
+int char_to_int(const char num[]){
+    std::stringstream str_num(num);
+    int result;
+
+    str_num >> result;
+
+    return result;
+}
 
 
 //main
 
-namespace WYLJUS002{
+int main(int argc, char *argv[]){
 
-    int main(int argc, char *argv[]){
-
-        std::string data_set;
-        
-        if(argc > 1)
-        data_set = std::string(argv[1]);
-
-        std::cout << "Data set is: " << data_set << std::endl;
-
+    std::string dataset_name;
+    
+    //Get the dataset name
+    if(argc > 1)
+        dataset_name = std::string(argv[1]);
+    else{
+        std::cout << "You must specify a data set!\n";
+        exit(0);
     }
 
+    std::cout << "Data set is: " << dataset_name << std::endl;
+
+    std::string output_file;
+    int num_clusters = 10;
+    int bin_size = 1;
+
+    for(int i = 2; i < argc-1; i++){
+        if (*(argv[i] + 1) == 'o')
+            output_file = std::string(argv[i+1]);
+        
+        if (*(argv[i] + 1) == 'k')
+            num_clusters = char_to_int(argv[i+1]);
+
+        if (std::string(argv[i] + 1) == "bin")
+            bin_size = char_to_int(argv[i+1]);
+    }
+
+    if(!output_file.empty()){
+        std::cout << "Output file: " << output_file << std::endl;
+    }else{
+        std::cout << "Output file unspecified, writting to std_out\n";
+    }
+
+    std::cout << "Clusters: " << num_clusters << std::endl;
+    std::cout << "Bin size: " << bin_size << std::endl;
 }
