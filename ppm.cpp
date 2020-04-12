@@ -9,6 +9,7 @@ namespace WYLJUS002{
 
     ppm::~ppm(){
         delete[] image_data;
+        delete[] image_feature;
     }
 
     ppm::ppm(const std::string file_name, const std::string path){
@@ -137,7 +138,14 @@ namespace WYLJUS002{
         }
     }
 
-    
+    int* ppm::get_image_feature(){
+        if(!feature_computed){
+            std::cout << "No image feature exists!\n";
+            exit(0);
+        }
+
+        return image_feature;
+    }
 
 
 }
