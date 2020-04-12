@@ -2,6 +2,8 @@
 #include <sstream> //String streaming and strings
 #include <iostream> //cout
 
+#include "ppm.h"
+
 //Global Variables
 
 
@@ -53,6 +55,13 @@ int main(int argc, char *argv[]){
         std::cout << "Output file unspecified, writting to std_out\n";
     }
 
+    //Feedback to user on the configuration
     std::cout << "Clusters: " << num_clusters << std::endl;
     std::cout << "Bin size: " << bin_size << std::endl;
+
+
+    //Initiate image processing
+    WYLJUS002::ppm image("five_1.ppm", dataset_name);
+
+
 }
