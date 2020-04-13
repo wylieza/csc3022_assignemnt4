@@ -9,7 +9,7 @@ namespace WYLJUS002{
 
     ppm::~ppm(){
         delete[] image_data;
-        delete[] image_feature;
+        delete[] image_feature.location;
     }
 
     ppm::ppm(const std::string file_name, const std::string path){
@@ -124,27 +124,31 @@ namespace WYLJUS002{
             exit(0);
         }
 
-        image_feature = new int[bin_size];
+        image_feature.location = new int[bin_size];
         double bin_width = (double)256/(double)bin_size;
 
         int wh_product = width*height;
         for (int px = 0; px < wh_product; px++){
             for (int bin = 0; bin < bin_size; bin++){
                 if(bin*bin_width <= *(image_data + px) < (bin+1)*bin_width){
-                    (*(image_feature + bin))++;
+                    (*(image_feature.location + bin))++;
                     break;
                 }
             }
         }
     }
 
-    int* ppm::get_image_feature(){
+    struct feature ppm::get_image_feature(){
         if(!feature_computed){
             std::cout << "No image feature exists!\n";
             exit(0);
         }
 
         return image_feature;
+    }
+
+    double ppm::get_distance(struct feature other){
+        return image_feature.get_distance(other);
     }
 
 
