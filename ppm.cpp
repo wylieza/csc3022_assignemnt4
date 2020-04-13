@@ -118,7 +118,7 @@ namespace WYLJUS002{
 
     }
 
-    void ppm::generate_image_feature(const int bin_size){
+    void ppm::generate_image_feature(const int &bin_size){
         if(!greyscale){
             std::cout << "Cannot find a loaded image in greyscale format\n";
             exit(0);

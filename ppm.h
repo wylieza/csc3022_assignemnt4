@@ -52,9 +52,9 @@ namespace WYLJUS002{
         void load_image(); //Load from file name already defined
         void load_image(const std::string file_name, const std::string path); //Load image data from file
         void to_greyscale(); //Convert image to a greyscale image
-        void generate_image_feature(const int bin_size); //Generate the image feature data
+        void generate_image_feature(const int &bin_size); //Generate the image feature data
         struct feature get_image_feature(); //Return the image feature
-        double get_distance(struct feature other);
+        double get_distance(const struct feature other);
 
     };
 
