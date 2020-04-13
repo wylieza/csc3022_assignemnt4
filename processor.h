@@ -4,6 +4,7 @@
 
 //Includes
 #include "ppm.h"
+#include <vector>
 
 
 namespace WYLJUS002{
@@ -19,7 +20,7 @@ namespace WYLJUS002{
         //Globals
         std::string relative_path;
         int num_images;
-        struct image *images;
+        std::vector<struct image> images;
         int num_means;
         struct WYLJUS002::feature *means;
 
@@ -30,14 +31,13 @@ namespace WYLJUS002{
         ~processor();
         processor(const std::string path, const int k);
 
+        private:
         void load_images();
+        std::vector<std::string> get_file_names();
+        public:
         void load_images(const std::string path);
 
         void compute_clusters();
-
-
-
-
 
     };
 
