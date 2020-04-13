@@ -15,7 +15,7 @@ run: clusterer
 	./clusterer $(args)
 
 clean:
-	rm -rf clusterer.o clusterer
+	rm -rf clusterer.o clusterer ppm.o processor.o
 
 test: clusterer
 	./clusterer "Gradient_Numbers_PPMS"
