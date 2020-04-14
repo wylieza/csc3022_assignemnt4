@@ -32,77 +32,75 @@ namespace WYLJUS002{
         if(file_name.empty()){
             std::cout << "Image file name not specified\n";
             exit(0);
-        }else{ //Load image file
-            std::ifstream in_file(("./" + relative_path + "/" + file_name).c_str(), std::ios::binary);
+        }
+        //Load image file
+        std::ifstream in_file(("./" + relative_path + "/" + file_name).c_str(), std::ios::binary);
 
-            if(!in_file.is_open()){
-                std::cout << "An error occured while attempting to open file\n"
-                "File location: >" << relative_path + file_name << "<\n";
-                exit(0);
-            }
+        if(!in_file.is_open()){
+            std::cout << "An error occured while attempting to open file\n"
+            "File location: >" << relative_path + file_name << "<\n";
+            exit(0);
+        }
 
-            std::string str_buff;
+        std::string str_buff;
 
-            bool read_header = true;
-            int param_line_num = 0;
-            while(read_header){
-                if(std::getline(in_file, str_buff)){
-                    if(str_buff.find('#') != str_buff.npos){
-                        continue;
-                    }else{
-                        switch(param_line_num){
-                            case 0:
-                                if (str_buff.find("P6") != str_buff.npos){
-                                    param_line_num++;
-                                    break;
-                                }else{
-                                    std::cout << "Incorectly formatted .ppm file!\n";
-                                    exit(0);
-                                }
-                            case 1:
-                                std::stringstream(str_buff.substr(0, str_buff.find(" "))) >> height;
-                                std::stringstream(str_buff.substr(str_buff.find(" ") + 1, str_buff.length())) >> width;
-                                param_line_num ++;
+        bool read_header = true;
+        int param_line_num = 0;
+        while(read_header){
+            if(std::getline(in_file, str_buff)){
+                if(str_buff.find('#') != str_buff.npos){
+                    continue;
+                }else{
+                    switch(param_line_num){
+                        case 0:
+                            if (str_buff.find("P6") != str_buff.npos){
+                                param_line_num++;
                                 break;
-                            case 2:
-                                read_header = false;
-                                break;
+                            }else{
+                                std::cout << "Incorectly formatted .ppm file!\n";
+                                exit(0);
+                            }
+                        case 1:
+                            std::stringstream(str_buff.substr(0, str_buff.find(" "))) >> height;
+                            std::stringstream(str_buff.substr(str_buff.find(" ") + 1, str_buff.length())) >> width;
+                            param_line_num ++;
+                            break;
+                        case 2:
+                            read_header = false;
+                            break;
 
-                            default:
-                                std::cout << "Default case reached, program will now terminate\n";   
-                                exit(0);                 
-                        }
+                        default:
+                            std::cout << "Default case reached, program will now terminate\n";   
+                            exit(0);                 
                     }
                 }
             }
-
-            //Begin reading the raw image data
-            int raw_data_beg = in_file.tellg();
-            in_file.seekg(0, in_file.end);
-            int raw_data_end = in_file.tellg();
-            in_file.seekg(raw_data_beg);
-
-            //Check raw data size matches image size
-            if(width*height*3 != raw_data_end-raw_data_beg){
-                std::cout << "Bytes of image data expected (" << width*height*3 << ") did not match the data"
-                                "present in file (" << raw_data_end-raw_data_beg << ")\n";
-                exit(0);
-            }
-
-            //Read the raw data
-            std::cout << "Reading data\n";
-            image_data = std::vector<unsigned char>(width*height*3);
-            char* char_buff = new char[width*height*3];
-            in_file.read(char_buff, width*height*3);
-
-            for(int i = 0; i < width*height*3; i++){
-                image_data[i] = (unsigned char) char_buff[i];
-            }
-
-            delete[] char_buff;
-
-
         }
+
+        //Begin reading the raw image data
+        int raw_data_beg = in_file.tellg();
+        in_file.seekg(0, in_file.end);
+        int raw_data_end = in_file.tellg();
+        in_file.seekg(raw_data_beg);
+
+        //Check raw data size matches image size
+        if(width*height*3 != raw_data_end-raw_data_beg){
+            std::cout << "Bytes of image data expected (" << width*height*3 << ") did not match the data"
+                            "present in file (" << raw_data_end-raw_data_beg << ")\n";
+            exit(0);
+        }
+
+        //Read the raw data
+        image_data = std::vector<unsigned char>(width*height*3);
+        char* char_buff = new char[width*height*3];
+        in_file.read(char_buff, width*height*3);
+
+        for(int i = 0; i < width*height*3; i++){
+            image_data[i] = (unsigned char) char_buff[i];
+        }
+
+        delete[] char_buff;
+
 
     }
 
@@ -140,7 +138,7 @@ namespace WYLJUS002{
             exit(0);
         }
 
-        image_feature.location = std::vector<int>(bin_size);
+        image_feature.location = std::vector<double>(bin_size);
         double bin_width = (double)256/(double)bin_size;
 
         int wh_product = width*height;
@@ -154,26 +152,8 @@ namespace WYLJUS002{
         }
     }
 
-    struct feature ppm::get_image_feature(){
-        if(!feature_computed){
-            std::cout << "No image feature exists!\n";
-            exit(0);
-        }
-
-        return image_feature;
-    }
-
     double ppm::get_distance(struct feature other){
         return image_feature.get_distance(other);
-    }
-
-    void ppm::set_closest(int cluster_id){
-
-    }
-
-
-    int ppm::get_closest(){
-        return closest_mean;
     }
 
 

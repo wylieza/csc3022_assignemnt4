@@ -12,20 +12,28 @@
 namespace WYLJUS002{
 
     struct feature{
-        int dimension;
-        std::vector<int> location;
+        std::vector<double> location;
 
         double get_distance(struct feature other){
-            if (dimension != other.dimension){
+            if (location.size() != other.location.size() || location.empty() || other.location.empty()){
                 return -1;
             }
 
             double accumulator = 0;
-            for (int i = 0; i < dimension; i++){
+            for (int i = 0; i < location.size(); i++){
                 accumulator += pow(location[i] - other.location[i], 2);
             }
 
             return sqrt(accumulator);
+        }
+
+        void print(){
+            std::cout << "[";
+            int last_index = location.size()-1;
+            for (int i = 0; i < last_index; i++){
+                std::cout << location[i] << ", ";
+            }
+            std::cout << location[last_index] << "]\n";
         }
 
     };
@@ -37,8 +45,10 @@ namespace WYLJUS002{
         std::string file_name;
         std::string relative_path;
         std::vector<unsigned char> image_data;
+        public:
         struct feature image_feature;
         int closest_mean; //Also the cluster id
+        private:
 
         //Flags
         bool greyscale;
@@ -55,10 +65,7 @@ namespace WYLJUS002{
         void load_image(const std::string file_name, const std::string path); //Load image data from file
         void to_greyscale(); //Convert image to a greyscale image
         void generate_image_feature(const int &bin_size); //Generate the image feature data
-        struct feature get_image_feature(); //Return the image feature
         double get_distance(const struct feature other);
-        void set_closest(int cluster_id);
-        int get_closest();
 
     };
 

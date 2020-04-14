@@ -63,7 +63,9 @@ int main(int argc, char *argv[]){
 
     //Initiate image processing
     //WYLJUS002::ppm image("eight_10.ppm", dataset_name);
-    WYLJUS002::processor proc(dataset_name, 10);
+    WYLJUS002::processor proc(dataset_name, num_clusters, bin_size);
+    std::cout << "Computing clusters...\n";
+    proc.compute_clusters();
 
 
 }
