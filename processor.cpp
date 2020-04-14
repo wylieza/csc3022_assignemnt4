@@ -3,8 +3,8 @@
 namespace WYLJUS002{
 
     processor::processor(){
-        int num_images = -1;
-        int num_means = -1;
+        num_images = -1;
+        num_means = -1;
     }
 
     processor::~processor(){
@@ -29,11 +29,18 @@ namespace WYLJUS002{
         std::vector<std::string> file_names = get_file_names();
 
         for(int i = 0; i < file_names.size(); i++){
-            images.push_back({ppm(file_names[i], relative_path), -1});
+            //DEBUG
+            std::cout << "Name: " << file_names[i] << std::endl;
+            std::cout << "relative path: " << relative_path << std::endl;
+            //DEBUG
+
+            std::shared_ptr<ppm> img(new ppm(file_names[i], relative_path));
+            images.push_back(img);
         }
     }
 
     std::vector<std::string> processor::get_file_names(){ //Currently only for linux
+    //TODO: Remove other extensions such as .txt
         std::vector<std::string> file_names;
 
         std::string files_list = "files_list.tmp";

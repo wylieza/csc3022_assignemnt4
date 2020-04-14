@@ -1,15 +1,15 @@
 #include "ppm.h"
 
 namespace WYLJUS002{
+    
 
     ppm::ppm(){
         greyscale = false;
         feature_computed = false;
+        closest_mean = 0;
     }
 
-    ppm::~ppm(){
-        delete[] image_data;
-        delete[] image_feature.location;
+    ppm::~ppm(){        
     }
 
     ppm::ppm(const std::string file_name, const std::string path){
@@ -19,6 +19,14 @@ namespace WYLJUS002{
         load_image();
         to_greyscale();
     }
+
+    /* COPY consturctor
+    ppm::ppm(const ppm &other){
+        std::cout << "Copy constructor called\n";
+        std::cout << other.file_name << std::endl;
+
+    }
+    */
 
     void ppm::load_image(){
         if(file_name.empty()){
@@ -33,23 +41,27 @@ namespace WYLJUS002{
                 exit(0);
             }
 
-            std::string buffer;
+            std::string str_buff;
 
             bool read_header = true;
             int param_line_num = 0;
             while(read_header){
-                if(std::getline(in_file, buffer)){
-                    if(buffer.find('#') != buffer.npos){
+                if(std::getline(in_file, str_buff)){
+                    if(str_buff.find('#') != str_buff.npos){
                         continue;
                     }else{
                         switch(param_line_num){
                             case 0:
-                                if (buffer.find("P6") != buffer.npos)
+                                if (str_buff.find("P6") != str_buff.npos){
                                     param_line_num++;
-                                break;
+                                    break;
+                                }else{
+                                    std::cout << "Incorectly formatted .ppm file!\n";
+                                    exit(0);
+                                }
                             case 1:
-                                std::stringstream(buffer.substr(0, buffer.find(" "))) >> height;
-                                std::stringstream(buffer.substr(buffer.find(" ") + 1, buffer.length())) >> width;
+                                std::stringstream(str_buff.substr(0, str_buff.find(" "))) >> height;
+                                std::stringstream(str_buff.substr(str_buff.find(" ") + 1, str_buff.length())) >> width;
                                 param_line_num ++;
                                 break;
                             case 2:
@@ -63,9 +75,6 @@ namespace WYLJUS002{
                     }
                 }
             }
-            //DEBUG - ensure correct data is read
-            std::cout << "Image height >" << height << "< width >" << width << "<\n";
-            //DEBUG
 
             //Begin reading the raw image data
             int raw_data_beg = in_file.tellg();
@@ -82,8 +91,15 @@ namespace WYLJUS002{
 
             //Read the raw data
             std::cout << "Reading data\n";
-            image_data = new unsigned char[width*height*3];
-            in_file.read((char*) image_data, width*height*3);
+            image_data = std::vector<unsigned char>(width*height*3);
+            char* char_buff = new char[width*height*3];
+            in_file.read(char_buff, width*height*3);
+
+            for(int i = 0; i < width*height*3; i++){
+                image_data[i] = (unsigned char) char_buff[i];
+            }
+
+            delete[] char_buff;
 
 
         }
@@ -103,16 +119,16 @@ namespace WYLJUS002{
             exit(0);
         }
 
-        unsigned char *gs_image_data = new unsigned char[wh_product];
+        std::vector<unsigned char> gs_image_data(wh_product);
         
         int r, g, b;
         for(int i = 0; i < wh_product; i++){
-            r = *(image_data + i*3);
-            g = *(image_data + i*3 + 1);
-            b = *(image_data + i*3 + 2);
-            *(gs_image_data+i) = 0.21*r + 0.72*g + 0.07*b;
+            r = image_data[i*3];
+            g = image_data[i*3 + 1];
+            b = image_data[i*3 + 2];
+            gs_image_data[i] = 0.21*r + 0.72*g + 0.07*b;
         }
-        delete[] image_data;
+        
         image_data = gs_image_data;
         greyscale = true;
 
@@ -124,14 +140,14 @@ namespace WYLJUS002{
             exit(0);
         }
 
-        image_feature.location = new int[bin_size];
+        image_feature.location = std::vector<int>(bin_size);
         double bin_width = (double)256/(double)bin_size;
 
         int wh_product = width*height;
         for (int px = 0; px < wh_product; px++){
             for (int bin = 0; bin < bin_size; bin++){
-                if(bin*bin_width <= *(image_data + px) < (bin+1)*bin_width){
-                    (*(image_feature.location + bin))++;
+                if(bin*bin_width <= image_data[px] && image_data[px] < (bin+1)*bin_width){
+                    image_feature.location[bin]++;
                     break;
                 }
             }
@@ -149,6 +165,15 @@ namespace WYLJUS002{
 
     double ppm::get_distance(struct feature other){
         return image_feature.get_distance(other);
+    }
+
+    void ppm::set_closest(int cluster_id){
+
+    }
+
+
+    int ppm::get_closest(){
+        return closest_mean;
     }
 
 

@@ -5,22 +5,25 @@
 //Includes
 #include "ppm.h"
 #include <vector>
+#include <memory>
 
 
 namespace WYLJUS002{
 
+    /*
     struct image{
         WYLJUS002::ppm img;
         int closest_mean; //This is also the cluster id
         
     };
+    */
 
     class processor{
 
         //Globals
         std::string relative_path;
         int num_images;
-        std::vector<struct image> images;
+        std::vector<std::shared_ptr<ppm>> images;
         int num_means;
         struct WYLJUS002::feature *means;
 

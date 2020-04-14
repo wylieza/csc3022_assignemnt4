@@ -3,6 +3,7 @@
 #include <iostream> //cout
 
 #include "ppm.h"
+#include "processor.h"
 
 //Global Variables
 
@@ -61,7 +62,8 @@ int main(int argc, char *argv[]){
 
 
     //Initiate image processing
-    WYLJUS002::ppm image("five_1.ppm", dataset_name);
+    //WYLJUS002::ppm image("eight_10.ppm", dataset_name);
+    WYLJUS002::processor proc(dataset_name, 10);
 
 
 }
