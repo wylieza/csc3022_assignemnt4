@@ -28,6 +28,10 @@ namespace WYLJUS002{
     }
     */
 
+   int num_bins(int bin_size){
+        return (int) 256/bin_size;
+    }
+
     void ppm::load_image(){
         if(file_name.empty()){
             std::cout << "Image file name not specified\n";
@@ -138,22 +142,27 @@ namespace WYLJUS002{
             exit(0);
         }
 
-        image_feature.location = std::vector<double>(bin_size);
-        double bin_width = (double)256/(double)bin_size;
+        image_feature.location = std::vector<double>(num_bins(bin_size));
 
         int wh_product = width*height;
         for (int px = 0; px < wh_product; px++){
-            for (int bin = 0; bin < bin_size; bin++){
-                if(bin*bin_width <= image_data[px] && image_data[px] < (bin+1)*bin_width){
+            for (int bin = 0; bin < num_bins(bin_size); bin++){
+                if(bin*bin_size <= image_data[px] && image_data[px] < (bin+1)*bin_size){
                     image_feature.location[bin]++;
                     break;
                 }
             }
         }
+
+        std::cout << "gen image feature - done\n";
     }
 
     double ppm::get_distance(struct feature other){
         return image_feature.get_distance(other);
+    }
+
+    std::string ppm::get_name(){
+        return file_name;
     }
 
 

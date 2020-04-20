@@ -38,6 +38,8 @@ namespace WYLJUS002{
 
     };
 
+    int num_bins(int bin_size);
+
     class ppm{
         //Globals
         int width;
@@ -66,6 +68,7 @@ namespace WYLJUS002{
         void to_greyscale(); //Convert image to a greyscale image
         void generate_image_feature(const int &bin_size); //Generate the image feature data
         double get_distance(const struct feature other);
+        std::string get_name();
 
     };
 
