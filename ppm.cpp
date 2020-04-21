@@ -29,7 +29,7 @@ namespace WYLJUS002{
     */
 
    int num_bins(int bin_size){
-        return (int) 256/bin_size;
+        return (int) ceil(256/(double)bin_size);
     }
 
     void ppm::load_image(){
@@ -153,8 +153,6 @@ namespace WYLJUS002{
                 }
             }
         }
-
-        std::cout << "gen image feature - done\n";
     }
 
     double ppm::get_distance(struct feature other){

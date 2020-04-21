@@ -86,24 +86,11 @@ namespace WYLJUS002{
 
         while(!done){
 
-            //debug
-            iteration++;
-            if(iteration % 10 == 0){
-                std::cout << "\n\nPrinting means \n";
-                for(int k = 0; k < num_means; k++){
-                    means[k].print();
-                }
-            }
-
-            //There is something wrong with the mean recalculation.... the initial location of all images is 1024 as it should be for num bins =1
-
-
+            //Determine closest centroid for each image
             for (int i = 0; i < images.size(); i++){
-                //std::cout << "Images: " << i << std::endl;
                 closest_mean = 0;
                 last_dist = images[i]->get_distance(means[0]);
                 for (int k = 1; k < num_means; k++){
-                    //std::cout << "Dist: " << images[i]->get_distance(means[k]) << std::endl;
                     if(last_dist > images[i]->get_distance(means[k])){
                         last_dist = images[i]->get_distance(means[k]);
                         closest_mean = k;
@@ -112,15 +99,14 @@ namespace WYLJUS002{
                 images[i]->closest_mean = closest_mean;
             }
 
-            //std::cout << "Calculated closest means\n";
-
+            //Determine if any images has changed to a new centroid since the last cycle
             done = true;
             for (int i = 0; i < images.size(); i++){
                 done = images[i]->closest_mean == previous_cm[i] ? done : false;
 
                 //debug
-                if (!done){
-                    std::cout << "Image: " << images[i]->get_name() << " has a new closest mean!\n"
+                if (previous_cm[i] != images[i]->closest_mean && previous_cm[i] != -1){
+                    std::cout << "Image: " << images[i]->get_name() << " "
                     "Previous mean: " << previous_cm[i] << " New mean: " << images[i]->closest_mean << std::endl;
                 }
 
@@ -128,10 +114,11 @@ namespace WYLJUS002{
             }
             //If 'done' is true at this point, there was no change in mean locations
 
-            if(!done){ //Recalc the means
-                std::cout << "Recalculating the means\n";
+            //Adjust the locations of any centroid that gained or lost an image (Not sure what to do for case where it looses all images -> currently just sits there, which is no good...)
+            if(!done){
+                std::cout << "\nAdjusting centroids\n\n";
                 for(int k = 0; k < num_means; k ++){
-                    std::vector<double> new_mean(num_bins(bin_size)); //Do I need to init all values to zero?
+                    std::vector<double> new_mean(num_bins(bin_size));
                     int divisor = 0;
                     for(int i = 0; i < images.size(); i++){
                         if(images[i]->closest_mean == k){
@@ -141,11 +128,13 @@ namespace WYLJUS002{
                             }
                         }
                     }
-                    if(divisor != 0){
+                    if(divisor > 0){
                         for(int b = 0; b < num_bins(bin_size); b++){
                             new_mean[b] = new_mean[b]/(double)divisor;
                         }
                         means[k].location = new_mean;
+                    }else{
+                        std::cout << "A centroid with no closest images has formed\n"; //DEBUG
                     }
                 }
             }
@@ -157,34 +146,53 @@ namespace WYLJUS002{
             std::cout << "Cluster: " << k << std::endl;
             for (int i = 0; i < images.size(); i++){
                 if(images[i]->closest_mean == k)
-                    std::cout << images[i]->get_name() << std::endl;
+                    std::cout << "\t\t\t" << images[i]->get_name() << std::endl;
             }
         }
-
-        std::cout << "\n\nAll images: \n";
-        for (int i = 0; i < images.size(); i++){
-            std::cout << images[i]->get_name() << " closest mean: " << images[i]->closest_mean << std::endl;
-        }
-
 
     }
 
     void processor::generate_image_features(){
         for(int i = 0; i < images.size(); i++){
             images[i]->generate_image_feature(bin_size);
-            std::cout << "Loaded image: " << images[i]->get_name() << " with location:"; images[i]->image_feature.print();//DEBUG
+            //std::cout << "Loaded image: " << images[i]->get_name() << " with location:"; images[i]->image_feature.print();//DEBUG
         }
     }
 
     void processor::init_means(){
-        int dim = images[0]->image_feature.location.size();
-        std::cout << dim << " dimensional\n"; //debug
-        std::vector<double> location(dim);
+        int dimension = images[0]->image_feature.location.size();        
+        std::vector<double> location(dimension);
+        std::vector<std::vector<double>> ordering_list(images.size());
+        std::vector<double> origin(dimension);
 
-        for (int i = 0; i < num_means; i++){
-            for (int j = 0; j < dim; j++){
-                location[j] = i*(255/(double)num_means);
+        if(num_means > images.size())
+        std::cout << "Warning -> There are more clusters than items to fill those clusters!\n"; //Wikipedia says this isn't allowed
+        std::cout << "Centroids are: " << dimension << " dimensional\n"; //debug
+
+        //Assign all images to ordering list [dist, index]
+        for (int i = 0; i < images.size(); i++){
+            ordering_list[i] = {images[i]->get_distance({origin}), (double) i};
+        }
+
+        //Order all images to be closest to furtherest from the origin
+        std::vector<double> tmp;
+        for (int i = 0; i < images.size()-1; i++){
+            for (int j = i; j < images.size(); j++){
+                if(ordering_list[i][0] > ordering_list[j][0]){
+                    tmp = ordering_list[i];
+                    ordering_list[i] = ordering_list[j];
+                    ordering_list[j] = tmp;
+                }
             }
+        }
+
+        //Set the centroids to be evenly distributed amoungst the data point locations using dist from origin as measure
+        std::cout << "Determining centroid starting locations\n";
+        int gap_size = images.size()/num_means;
+        for (int i = 0; i < num_means; i++){
+            int index = (i*gap_size) >= 1 ? (i*gap_size) : (i*gap_size*num_means) % images.size();
+
+            location = images[(int) ordering_list[index][1]]->image_feature.location;
 
             means.push_back({location});
             means[i].print(); //debug
