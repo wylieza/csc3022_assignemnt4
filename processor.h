@@ -33,6 +33,8 @@ namespace WYLJUS002{
         ~processor();
         processor(const std::string path, const int k, const int bsize);
 
+        friend std::ostream& operator<<(std::ostream& os, const processor& proc);
+
         private:
         void load_images();
         std::vector<std::string> get_file_names();

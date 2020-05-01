@@ -66,6 +66,7 @@ int main(int argc, char *argv[]){
     WYLJUS002::processor proc(dataset_name, num_clusters, bin_size);
     std::cout << "Computing clusters...\n";
     proc.compute_clusters();
+    std::cout << proc;
 
 
 }

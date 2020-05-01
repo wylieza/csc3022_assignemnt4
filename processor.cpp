@@ -141,15 +141,18 @@ namespace WYLJUS002{
         
         }
 
-        //print out the clusters
-        for(int k = 0; k < num_means; k++){
-            std::cout << "Cluster: " << k << std::endl;
-            for (int i = 0; i < images.size(); i++){
-                if(images[i]->closest_mean == k)
-                    std::cout << "\t\t\t" << images[i]->get_name() << std::endl;
-            }
-        }
+    }
 
+    std::ostream& operator<<(std::ostream& os, const processor& proc){
+        for(int k = 0; k < proc.num_means; k++){
+            os << "cluster: " << k << ":";
+            for (int i = 0; i < proc.images.size(); i++){
+                if(proc.images[i]->closest_mean == k)
+                    os << " " << proc.images[i]->get_name();
+            }
+            os << std::endl;
+        }
+        return os;
     }
 
     void processor::generate_image_features(){
