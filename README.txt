@@ -16,7 +16,7 @@ Example:
 <input folder> [-o output] [-k n] [-bin b]
 
 <input folder> -> Folder containing images to be classified
-[-o output] -> Specify a textfile to contain the classification results
+[-o output] -> Specify a file to contain the classification results (extension must be provided)
 [-k n] -> Specify the number of clusters to classify
 [-bin b] -> Specify the 'bin width' for histogram generation
 

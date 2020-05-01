@@ -50,12 +50,6 @@ int main(int argc, char *argv[]){
             bin_size = char_to_int(argv[i+1]);
     }
 
-    if(!output_file.empty()){
-        std::cout << "Output file: " << output_file << std::endl;
-    }else{
-        std::cout << "Output file unspecified, writting to std_out\n";
-    }
-
     //Feedback to user on the configuration
     std::cout << "Clusters: " << num_clusters << std::endl;
     std::cout << "Bin size: " << bin_size << std::endl;
@@ -66,7 +60,16 @@ int main(int argc, char *argv[]){
     WYLJUS002::processor proc(dataset_name, num_clusters, bin_size);
     std::cout << "Computing clusters...\n";
     proc.compute_clusters();
-    std::cout << proc;
+
+
+    if(!output_file.empty()){
+        std::cout << "Output file: " << output_file << std::endl;
+        proc.file_results(output_file);
+    }else{
+        std::cout << "Output file unspecified, writting to std_out\n\n";
+        std::cout << proc;
+    }
+    
 
 
 }

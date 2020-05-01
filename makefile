@@ -18,4 +18,7 @@ clean:
 	rm -rf clusterer.o clusterer ppm.o processor.o
 
 test: clusterer
-	./clusterer "Gradient_Numbers_PPMS"
+	./clusterer Gradient_Numbers_PPMS
+
+testf: clusterer
+	./clusterer Gradient_Numbers_PPMS -o results_output.txt

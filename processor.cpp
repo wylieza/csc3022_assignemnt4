@@ -155,6 +155,13 @@ namespace WYLJUS002{
         return os;
     }
 
+    void processor::file_results(const std::string& of_name){
+        std::ofstream file_obj;
+        file_obj.open(of_name.c_str());
+        file_obj << *this;
+        file_obj.close();
+    }
+
     void processor::generate_image_features(){
         for(int i = 0; i < images.size(); i++){
             images[i]->generate_image_feature(bin_size);
