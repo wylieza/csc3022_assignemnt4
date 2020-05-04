@@ -116,31 +116,36 @@ namespace WYLJUS002{
 
             //Adjust the locations of any centroid that gained or lost an image (Not sure what to do for case where it looses all images -> currently just sits there, which is no good...)
             if(!done){
-                std::cout << "\nAdjusting centroids\n\n";
-                for(int k = 0; k < num_means; k ++){
-                    std::vector<double> new_mean(num_bins(bin_size));
-                    int divisor = 0;
-                    for(int i = 0; i < images.size(); i++){
-                        if(images[i]->closest_mean == k){
-                            divisor++;
-                            for(int b = 0; b < num_bins(bin_size); b++){
-                                new_mean[b] += images[i]->image_feature.location[b];
-                            }
-                        }
-                    }
-                    if(divisor > 0){
-                        for(int b = 0; b < num_bins(bin_size); b++){
-                            new_mean[b] = new_mean[b]/(double)divisor;
-                        }
-                        means[k].location = new_mean;
-                    }else{
-                        std::cout << "A centroid with no closest images has formed\n"; //DEBUG
-                    }
-                }
+                update_centroid_locations();
             }
         
         }
 
+    }
+
+    void processor::update_centroid_locations(){
+        std::cout << "\nAdjusting centroids\n\n";
+        for(int k = 0; k < num_means; k ++){
+            std::vector<double> new_mean(num_bins(bin_size));
+            int divisor = 0;
+            for(int i = 0; i < images.size(); i++){
+                if(images[i]->closest_mean == k){
+                    divisor++;
+                    for(int b = 0; b < num_bins(bin_size); b++){
+                        new_mean[b] += images[i]->image_feature.location[b];
+                    }
+                }
+            }
+
+            if(divisor > 0){
+                for(int b = 0; b < num_bins(bin_size); b++){
+                    new_mean[b] = new_mean[b]/(double)divisor;
+                }
+                means[k].location = new_mean;
+            }else{
+                std::cout << "A centroid with no closest images has formed\n"; //DEBUG
+            }
+        }
     }
 
     std::ostream& operator<<(std::ostream& os, const processor& proc){
@@ -172,13 +177,42 @@ namespace WYLJUS002{
     void processor::init_means(){
         int dimension = images[0]->image_feature.location.size();        
         std::vector<double> location(dimension);
-        std::vector<std::vector<double>> ordering_list(images.size());
-        std::vector<double> origin(dimension);
+        //std::vector<std::vector<double>> ordering_list(images.size());
+        //std::vector<double> origin(dimension);
 
         if(num_means > images.size())
         std::cout << "Warning -> There are more clusters than items to fill those clusters!\n"; //Wikipedia says this isn't allowed
+
         std::cout << "Centroids are: " << dimension << " dimensional\n"; //debug
 
+        //Random allocation initilization method
+        
+        //Shuffle the images
+        int seed = 5;
+        std::shuffle(images.begin(), images.end(), std::default_random_engine(seed));
+        //Assign images to the centroids
+        int k = 0;
+        for(int i = 0; i < images.size(); ++i, ++k){
+            if (k == num_means){
+                k = 0;
+            }
+                
+            
+            if (i < num_means)
+                means.push_back({location});
+
+            images[i]->closest_mean = k;
+            std::cout << "Allocation to: " << k << std::endl;
+        }
+
+        
+
+        update_centroid_locations();
+
+
+
+        //ORIGINAL INITILIZATION METHOD
+        /*
         //Assign all images to ordering list [dist, index]
         for (int i = 0; i < images.size(); i++){
             ordering_list[i] = {images[i]->get_distance({origin}), (double) i};
@@ -207,6 +241,7 @@ namespace WYLJUS002{
             means.push_back({location});
             means[i].print(); //debug
         }
+        */
     }
 
 

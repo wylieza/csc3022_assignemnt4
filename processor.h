@@ -5,6 +5,8 @@
 //Includes
 #include "ppm.h"
 #include <memory>
+#include <random>
+#include <algorithm>
 
 
 namespace WYLJUS002{
@@ -40,6 +42,7 @@ namespace WYLJUS002{
         public:
         void load_images(const std::string path);
         void compute_clusters();
+        void update_centroid_locations();
         friend std::ostream& operator<<(std::ostream& os, const processor& proc);
         void file_results(const std::string& of_name);
 
