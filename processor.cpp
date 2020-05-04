@@ -76,9 +76,8 @@ namespace WYLJUS002{
 
         std::vector<int> previous_cm(images.size());
         for(int i = 0; i < previous_cm.size(); i++)
-            previous_cm[i] = -1;
+            previous_cm[i] = images[i]->closest_mean;
 
-        //not? recursive code:
         bool done = false;
         int closest_mean;
         double last_dist;
@@ -88,11 +87,13 @@ namespace WYLJUS002{
 
             //Determine closest centroid for each image
             for (int i = 0; i < images.size(); i++){
-                closest_mean = 0;
-                last_dist = images[i]->get_distance(means[0]);
-                for (int k = 1; k < num_means; k++){
-                    if(last_dist > images[i]->get_distance(means[k])){
-                        last_dist = images[i]->get_distance(means[k]);
+                closest_mean = images[i]->closest_mean;
+                last_dist = images[i]->get_distance(means[closest_mean]);
+                double distance_tm = 0;
+                for (int k = 0; k < num_means; k++){
+                    distance_tm = images[i]->get_distance(means[k]);
+                    if(last_dist > distance_tm){
+                        last_dist = distance_tm;
                         closest_mean = k;
                     }                    
                 }
@@ -105,7 +106,7 @@ namespace WYLJUS002{
                 done = images[i]->closest_mean == previous_cm[i] ? done : false;
 
                 //debug
-                if (previous_cm[i] != images[i]->closest_mean && previous_cm[i] != -1){
+                if (previous_cm[i] != images[i]->closest_mean){
                     std::cout << "Image: " << images[i]->get_name() << " "
                     "Previous mean: " << previous_cm[i] << " New mean: " << images[i]->closest_mean << std::endl;
                 }
@@ -185,11 +186,11 @@ namespace WYLJUS002{
 
         std::cout << "Centroids are: " << dimension << " dimensional\n"; //debug
 
-        //Random allocation initilization method
-        
+        //RANDOM SEEDED ALLOCATION METHOD        
         //Shuffle the images
-        int seed = 5;
+        int seed = 1324458;
         std::shuffle(images.begin(), images.end(), std::default_random_engine(seed));
+
         //Assign images to the centroids
         int k = 0;
         for(int i = 0; i < images.size(); ++i, ++k){
@@ -205,7 +206,19 @@ namespace WYLJUS002{
             std::cout << "Allocation to: " << k << std::endl;
         }
 
-        
+        //ALREADY CLUSTERED CENTROID ALLOCATION
+        //DEBUG - Print all image names and allocate as 'already clustered'
+        /*
+        int j = 0;
+        for (int i = 0; i < images.size(); i++){
+            std::cout << images[i]->get_name() << " into group " << j << std::endl;
+            images[i]->closest_mean = j;
+            if((i+1)%10 == 0)
+                j++;
+            if(j >= 10)
+                j = 0;
+        }
+        */
 
         update_centroid_locations();
 
