@@ -17,6 +17,10 @@ run: clusterer
 clean:
 	rm -rf clusterer.o clusterer ppm.o processor.o
 
+debug:
+	g++ -g -o clusterer clusterer.o ppm.o processor.o -std=c++11
+	gdb --args clusterer Gradient_Numbers_PPMS
+
 test: clusterer
 	./clusterer Gradient_Numbers_PPMS
 
