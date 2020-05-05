@@ -34,11 +34,6 @@ ________________________________________________________________________________
 make                            -> Compile all source code
 make clean                      -> Remove all binaries
 make run args="<Custom args>"   -> Runs the clusterer binary with the supplied argument(s)
-
->> Dev Commands <<
-The following are NOT part of the 'release' but allowed for quick testing during code debugging.
-make test                       -> Executes with the argument "Gradient_Numbers_PPMS"
-
 _________________________________________________________________________________________________
 
 Note: The application can also be executed in the terminal using the usual ./clusterer <args>
