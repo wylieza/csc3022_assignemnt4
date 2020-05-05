@@ -15,6 +15,7 @@ namespace WYLJUS002{
         num_means = k;
         relative_path = path;
         bin_size = bsize;
+        //num_iterations = -1;
         load_images();
 
 
@@ -84,7 +85,7 @@ namespace WYLJUS002{
         int iteration = 0; //debug
 
         while(!done){
-
+            iteration++;
             //Determine closest centroid for each image
             for (int i = 0; i < images.size(); i++){
                 closest_mean = images[i]->closest_mean;
@@ -106,10 +107,12 @@ namespace WYLJUS002{
                 done = images[i]->closest_mean == previous_cm[i] ? done : false;
 
                 //debug
+                /*
                 if (previous_cm[i] != images[i]->closest_mean){
                     std::cout << "Image: " << images[i]->get_name() << " "
                     "Previous mean: " << previous_cm[i] << " New mean: " << images[i]->closest_mean << std::endl;
                 }
+                */
 
                 previous_cm[i] = images[i]->closest_mean;                
             }
@@ -118,6 +121,8 @@ namespace WYLJUS002{
             //Adjust the locations of any centroid that gained or lost an image (Not sure what to do for case where it looses all images -> currently just sits there, which is no good...)
             if(!done){
                 update_centroid_locations();
+            }else{
+                std::cout << "Finnished, total iterations: " << iteration << std::endl;
             }
         
         }
@@ -125,7 +130,7 @@ namespace WYLJUS002{
     }
 
     void processor::update_centroid_locations(){
-        std::cout << "\nAdjusting centroids\n\n";
+        //std::cout << "\nAdjusting centroids\n\n";
         for(int k = 0; k < num_means; k ++){
             std::vector<double> new_mean(num_bins(bin_size));
             int divisor = 0;
@@ -203,7 +208,6 @@ namespace WYLJUS002{
                 means.push_back({location});
 
             images[i]->closest_mean = k;
-            std::cout << "Allocation to: " << k << std::endl;
         }
 
         //ALREADY CLUSTERED CENTROID ALLOCATION
