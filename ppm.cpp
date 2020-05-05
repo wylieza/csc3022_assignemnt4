@@ -5,28 +5,24 @@ namespace WYLJUS002{
 
     ppm::ppm(){
         greyscale = false;
-        feature_computed = false;
+        image_loaded = false;
         closest_mean = 0;
     }
 
     ppm::~ppm(){        
     }
 
-    ppm::ppm(const std::string file_name, const std::string path){
+    ppm::ppm(const std::string file_name, const std::string path, const bool greyscale){
         ppm();
         this->file_name = file_name;
         this->relative_path = path;
         load_image();
-        to_greyscale();
+        if(greyscale){
+            this->greyscale = true;
+            to_greyscale();
+        }
+        image_loaded = true;
     }
-
-    /* COPY consturctor
-    ppm::ppm(const ppm &other){
-        std::cout << "Copy constructor called\n";
-        std::cout << other.file_name << std::endl;
-
-    }
-    */
 
    int num_bins(int bin_size){
         return (int) ceil(256/(double)bin_size);
@@ -132,19 +128,20 @@ namespace WYLJUS002{
         }
         
         image_data = gs_image_data;
-        greyscale = true;
 
     }
 
     void ppm::generate_image_feature(const int &bin_size){
-        if(!greyscale){
-            std::cout << "Cannot find a loaded image in greyscale format\n";
+        if(!image_loaded){
+            std::cout << "No image data has been loaded!\n";
             exit(0);
         }
 
         image_feature.location = std::vector<double>(num_bins(bin_size));
 
         int wh_product = width*height;
+        if(!greyscale)
+            wh_product *= 3;
         for (int px = 0; px < wh_product; px++){
             for (int bin = 0; bin < num_bins(bin_size); bin++){
                 if(bin*bin_size <= image_data[px] && image_data[px] < (bin+1)*bin_size){

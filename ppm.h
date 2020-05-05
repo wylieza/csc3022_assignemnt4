@@ -54,14 +54,14 @@ namespace WYLJUS002{
 
         //Flags
         bool greyscale;
-        bool feature_computed;
+        bool image_loaded;
 
 
         //Functions
         public:
         ppm(); //Default constructor
         ~ppm(); //Default destructor
-        ppm(const std::string file_name, const std::string path); //Constructor with file name specified
+        ppm(const std::string file_name, const std::string path, const bool greyscale); //Constructor with file name specified
         //ppm(const ppm &other); //Copy constructor
         void load_image(); //Load from file name already defined
         void load_image(const std::string file_name, const std::string path); //Load image data from file

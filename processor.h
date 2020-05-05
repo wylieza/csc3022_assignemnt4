@@ -27,13 +27,14 @@ namespace WYLJUS002{
         std::vector<struct feature> means;
         int num_means;
         int bin_size;
+        bool greyscale;
 
         
         //Functions
         public:
         processor();
         ~processor();
-        processor(const std::string path, const int k, const int bsize);
+        processor(const std::string path, const int k, const int bsize, const bool greyscale);
 
         private:
         void load_images();
@@ -47,7 +48,6 @@ namespace WYLJUS002{
         void file_results(const std::string& of_name);
 
         private:
-        void generate_image_features();
         void init_means();
 
 

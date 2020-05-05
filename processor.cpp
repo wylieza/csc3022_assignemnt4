@@ -10,17 +10,18 @@ namespace WYLJUS002{
         
     }
 
-    processor::processor(const std::string path, const int k, const int bsize){
+    processor::processor(const std::string path, const int k, const int bsize, const bool gs){
         processor();
         num_means = k;
         relative_path = path;
         bin_size = bsize;
-        //num_iterations = -1;
+        greyscale = gs;
         load_images();
 
 
     }
 
+    //Loads up the images (depends on 'get_file_names')
     void processor::load_images(){
         if(relative_path.empty()){
             std::cout << "No image base has been specified!\n";
@@ -31,14 +32,16 @@ namespace WYLJUS002{
 
         for(int i = 0; i < file_names.size(); i++){
 
-            std::shared_ptr<ppm> img(new ppm(file_names[i], relative_path));
+            std::shared_ptr<ppm> img(new ppm(file_names[i], relative_path, greyscale));
             images.push_back(img);
 
         }
     }
 
-    std::vector<std::string> processor::get_file_names(){ //Currently only for linux
-    //TODO: Remove other extensions such as .txt
+    //For a linux os, will find all file names of .ppm files
+    std::vector<std::string> processor::get_file_names(){
+        std::cout << "Importing images\n";
+
         std::vector<std::string> file_names;
 
         std::string files_list = "files_list.tmp";
@@ -49,7 +52,11 @@ namespace WYLJUS002{
 
         if(in_file){
             while(std::getline(in_file, buffer)){                
-                file_names.push_back(buffer);
+                if(buffer.find(".ppm") != std::string::npos){
+                    file_names.push_back(buffer);
+                }else{
+                    std::cout << "[WARN] File '" << buffer << "' does not have the extension '.ppm' and was ignored\n";
+                }
             }
         }else{
             std::cout << "Error occured while reading file!";
@@ -72,20 +79,29 @@ namespace WYLJUS002{
             exit(0);
         }
 
-        generate_image_features();
+        //Generate the image feature for each image
+        for(int i = 0; i < images.size(); i++){
+            images[i]->generate_image_feature(bin_size);
+            //std::cout << "Loaded image: " << images[i]->get_name() << " with location:"; images[i]->image_feature.print();//DEBUG
+        }
+
+        //This function initilizes the centroids 
         init_means();
 
+        //Setup a vector to track the 'previous' closest mean (If there is no change after an iteration we stop)
         std::vector<int> previous_cm(images.size());
         for(int i = 0; i < previous_cm.size(); i++)
             previous_cm[i] = images[i]->closest_mean;
 
+        //Variable for tracking during the iterations
         bool done = false;
         int closest_mean;
         double last_dist;
-        int iteration = 0; //debug
+        int iteration = 0;
 
         while(!done){
             iteration++;
+
             //Determine closest centroid for each image
             for (int i = 0; i < images.size(); i++){
                 closest_mean = images[i]->closest_mean;
@@ -118,7 +134,6 @@ namespace WYLJUS002{
             }
             //If 'done' is true at this point, there was no change in mean locations
 
-            //Adjust the locations of any centroid that gained or lost an image (Not sure what to do for case where it looses all images -> currently just sits there, which is no good...)
             if(!done){
                 update_centroid_locations();
             }else{
@@ -129,8 +144,9 @@ namespace WYLJUS002{
 
     }
 
+    //This recalculates the locations of each centroid
     void processor::update_centroid_locations(){
-        //std::cout << "\nAdjusting centroids\n\n";
+        //std::cout << "Adjusting centroids\n";
         for(int k = 0; k < num_means; k ++){
             std::vector<double> new_mean(num_bins(bin_size));
             int divisor = 0;
@@ -173,13 +189,6 @@ namespace WYLJUS002{
         file_obj.close();
     }
 
-    void processor::generate_image_features(){
-        for(int i = 0; i < images.size(); i++){
-            images[i]->generate_image_feature(bin_size);
-            //std::cout << "Loaded image: " << images[i]->get_name() << " with location:"; images[i]->image_feature.print();//DEBUG
-        }
-    }
-
     void processor::init_means(){
         int dimension = images[0]->image_feature.location.size();        
         std::vector<double> location(dimension);
@@ -189,7 +198,7 @@ namespace WYLJUS002{
         if(num_means > images.size())
         std::cout << "Warning -> There are more clusters than items to fill those clusters!\n"; //Wikipedia says this isn't allowed
 
-        std::cout << "Centroids are: " << dimension << " dimensional\n"; //debug
+        std::cout << "[DEBUG]Centroids are: " << dimension << " dimensional\n"; //debug
 
         //RANDOM SEEDED ALLOCATION METHOD        
         //Shuffle the images

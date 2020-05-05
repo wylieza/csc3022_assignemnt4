@@ -26,3 +26,6 @@ test: clusterer
 
 testf: clusterer
 	./clusterer Gradient_Numbers_PPMS -o results_output.txt
+
+color: clusterer
+	./clusterer Gradient_Numbers_PPMS -color
