@@ -10,7 +10,7 @@ namespace WYLJUS002{
         
     }
 
-    processor::processor(const std::string path, const int k, const int bsize, const bool gs){
+    processor::processor(const std::string& path, const int& k, const int& bsize, const bool& gs){
         processor();
         num_means = k;
         relative_path = path;
@@ -68,7 +68,7 @@ namespace WYLJUS002{
     }
 
 
-    void processor::load_images(const std::string path){
+    void processor::load_images(const std::string& path){
         relative_path = path;
         load_images();
     }
@@ -196,9 +196,9 @@ namespace WYLJUS002{
         //std::vector<double> origin(dimension);
 
         if(num_means > images.size())
-        std::cout << "Warning -> There are more clusters than items to fill those clusters!\n"; //Wikipedia says this isn't allowed
+        std::cout << "[Warn] There are more clusters than items to fill those clusters!\n"; //Wikipedia says this isn't allowed
 
-        std::cout << "[DEBUG]Centroids are: " << dimension << " dimensional\n"; //debug
+        std::cout << "[DEBUG] Centroids are: " << dimension << " dimensional\n"; //debug
 
         //RANDOM SEEDED ALLOCATION METHOD        
         //Shuffle the images

@@ -14,7 +14,7 @@ namespace WYLJUS002{
     struct feature{
         std::vector<double> location;
 
-        double get_distance(struct feature other){
+        double get_distance(const struct feature& other){
             if (location.size() != other.location.size() || location.empty() || other.location.empty()){
                 return -1;
             }
@@ -38,7 +38,7 @@ namespace WYLJUS002{
 
     };
 
-    int num_bins(int bin_size);
+    int num_bins(const int& bin_size);
 
     class ppm{
         //Globals
@@ -61,13 +61,13 @@ namespace WYLJUS002{
         public:
         ppm(); //Default constructor
         ~ppm(); //Default destructor
-        ppm(const std::string file_name, const std::string path, const bool greyscale); //Constructor with file name specified
+        ppm(const std::string& file_name, const std::string& path, const bool& greyscale); //Constructor with file name specified
         //ppm(const ppm &other); //Copy constructor
         void load_image(); //Load from file name already defined
-        void load_image(const std::string file_name, const std::string path); //Load image data from file
+        void load_image(const std::string& file_name, const std::string& path); //Load image data from file
         void to_greyscale(); //Convert image to a greyscale image
         void generate_image_feature(const int &bin_size); //Generate the image feature data
-        double get_distance(const struct feature other);
+        double get_distance(const struct feature& other);
         std::string get_name();
 
     };

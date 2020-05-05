@@ -12,7 +12,7 @@ namespace WYLJUS002{
     ppm::~ppm(){        
     }
 
-    ppm::ppm(const std::string file_name, const std::string path, const bool greyscale){
+    ppm::ppm(const std::string& file_name, const std::string& path, const bool& greyscale){
         ppm();
         this->file_name = file_name;
         this->relative_path = path;
@@ -24,7 +24,7 @@ namespace WYLJUS002{
         image_loaded = true;
     }
 
-   int num_bins(int bin_size){
+   int num_bins(const int& bin_size){
         return (int) ceil(256/(double)bin_size);
     }
 
@@ -104,7 +104,7 @@ namespace WYLJUS002{
 
     }
 
-    void ppm::load_image(const std::string file_name, const std::string path = "./"){
+    void ppm::load_image(const std::string& file_name, const std::string& path = "./"){
         this->file_name = file_name;
         this->relative_path = path;
         load_image();
@@ -152,7 +152,7 @@ namespace WYLJUS002{
         }
     }
 
-    double ppm::get_distance(struct feature other){
+    double ppm::get_distance(const struct feature& other){
         return image_feature.get_distance(other);
     }
 

@@ -34,14 +34,14 @@ namespace WYLJUS002{
         public:
         processor();
         ~processor();
-        processor(const std::string path, const int k, const int bsize, const bool greyscale);
+        processor(const std::string& path, const int& k, const int& bsize, const bool& greyscale);
 
         private:
         void load_images();
         std::vector<std::string> get_file_names();
 
         public:
-        void load_images(const std::string path);
+        void load_images(const std::string& path);
         void compute_clusters();
         void update_centroid_locations();
         friend std::ostream& operator<<(std::ostream& os, const processor& proc);

@@ -7,7 +7,7 @@ clusterer.o: clusterer.cpp
 ppm.o: ppm.cpp ppm.h
 	g++ -c -o ppm.o ppm.cpp -std=c++11
 
-processor.o: processor.cpp processor.h
+processor.o: processor.cpp processor.h ppm.h
 	g++ -c -o processor.o processor.cpp -std=c++11
 
 
