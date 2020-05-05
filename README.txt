@@ -8,17 +8,21 @@ directory as the executable (clusterer).
 Given the name of this folder (as an argument) the program will scan the folder for any files with
 the .ppm extension and attempt to import and classify these files.
 
+I have tested the image importing on nightmare and it works (requirement). It also works in the linux subsystem on windows 10.
+The implementation is not designed to work on windows and has not been tested.
+
 Example:
 ./clusterer <folder name>
 
 -- Program Arguments --
 
-<input folder> [-o output] [-k n] [-bin b]
+<input folder> [-o output] [-k n] [-bin b] [-color]
 
 <input folder> -> Folder containing images to be classified
 [-o output] -> Specify a file to contain the classification results (extension must be provided)
 [-k n] -> Specify the number of clusters to classify
 [-bin b] -> Specify the 'bin width' for histogram generation
+[-color] -> Do not convert images to greyscale, use color to enhance the k-means clustering
 
 
 --- MAKEFILE ---
