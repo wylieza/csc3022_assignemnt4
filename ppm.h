@@ -60,7 +60,6 @@ namespace WYLJUS002{
         //Functions
         public:
         ppm(); //Default constructor
-        ~ppm(); //Default destructor
         ppm(const std::string& file_name, const std::string& path, const bool& greyscale); //Constructor with file name specified
         //ppm(const ppm &other); //Copy constructor
         void load_image(); //Load from file name already defined

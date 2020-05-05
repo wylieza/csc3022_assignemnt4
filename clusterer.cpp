@@ -5,9 +5,6 @@
 #include "ppm.h"
 #include "processor.h"
 
-//Global Variables
-
-
 //Functions
 int char_to_int(const char num[]){
     std::stringstream str_num(num);
@@ -17,9 +14,6 @@ int char_to_int(const char num[]){
 
     return result;
 }
-
-
-//main
 
 int main(int argc, char *argv[]){
 
@@ -63,8 +57,7 @@ int main(int argc, char *argv[]){
     std::cout << "\n";
 
 
-    //Initiate image processing
-    //WYLJUS002::ppm image("eight_10.ppm", dataset_name);
+    //Begin image processing
     WYLJUS002::processor proc(dataset_name, num_clusters, bin_size, greyscale);
     std::cout << "Computing clusters\n";
     proc.compute_clusters();

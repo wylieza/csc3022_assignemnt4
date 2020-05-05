@@ -6,10 +6,6 @@ namespace WYLJUS002{
         num_means = -1;
     }
 
-    processor::~processor(){
-        
-    }
-
     processor::processor(const std::string& path, const int& k, const int& bsize, const bool& gs){
         processor();
         num_means = k;
@@ -17,11 +13,9 @@ namespace WYLJUS002{
         bin_size = bsize;
         greyscale = gs;
         load_images();
-
-
     }
 
-    //Loads up the images (depends on 'get_file_names')
+    //Load up the images (depends on 'get_file_names')
     void processor::load_images(){
         if(relative_path.empty()){
             std::cout << "No image base has been specified!\n";
@@ -82,7 +76,6 @@ namespace WYLJUS002{
         //Generate the image feature for each image
         for(int i = 0; i < images.size(); i++){
             images[i]->generate_image_feature(bin_size);
-            //std::cout << "Loaded image: " << images[i]->get_name() << " with location:"; images[i]->image_feature.print();//DEBUG
         }
 
         //This function initilizes the centroids 
@@ -121,32 +114,22 @@ namespace WYLJUS002{
             done = true;
             for (int i = 0; i < images.size(); i++){
                 done = images[i]->closest_mean == previous_cm[i] ? done : false;
-
-                //debug
-                /*
-                if (previous_cm[i] != images[i]->closest_mean){
-                    std::cout << "Image: " << images[i]->get_name() << " "
-                    "Previous mean: " << previous_cm[i] << " New mean: " << images[i]->closest_mean << std::endl;
-                }
-                */
-
                 previous_cm[i] = images[i]->closest_mean;                
             }
-            //If 'done' is true at this point, there was no change in mean locations
-
-            if(!done){
-                update_centroid_locations();
-            }else{
+            
+            //'done' is true at this point if there was no change in the closest mean for any of the pictures
+            if(done){
                 std::cout << "Finnished, total iterations: " << iteration << std::endl;
+            }else{
+                update_centroid_locations();
             }
         
         }
 
     }
 
-    //This recalculates the locations of each centroid
+    //Recalculate the locations of each centroid
     void processor::update_centroid_locations(){
-        //std::cout << "Adjusting centroids\n";
         for(int k = 0; k < num_means; k ++){
             std::vector<double> new_mean(num_bins(bin_size));
             int divisor = 0;
@@ -165,7 +148,7 @@ namespace WYLJUS002{
                 }
                 means[k].location = new_mean;
             }else{
-                std::cout << "A centroid with no closest images has formed\n"; //DEBUG
+                //std::cout << "[Info] A centroid with no closest images exists\n";
             }
         }
     }
@@ -192,17 +175,13 @@ namespace WYLJUS002{
     void processor::init_means(){
         int dimension = images[0]->image_feature.location.size();        
         std::vector<double> location(dimension);
-        //std::vector<std::vector<double>> ordering_list(images.size());
-        //std::vector<double> origin(dimension);
 
         if(num_means > images.size())
         std::cout << "[Warn] There are more clusters than items to fill those clusters!\n"; //Wikipedia says this isn't allowed
 
-        std::cout << "[DEBUG] Centroids are: " << dimension << " dimensional\n"; //debug
-
         //RANDOM SEEDED ALLOCATION METHOD        
         //Shuffle the images
-        int seed = 1324458;
+        int seed = (int) std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         std::shuffle(images.begin(), images.end(), std::default_random_engine(seed));
 
         //Assign images to the centroids
@@ -219,55 +198,8 @@ namespace WYLJUS002{
             images[i]->closest_mean = k;
         }
 
-        //ALREADY CLUSTERED CENTROID ALLOCATION
-        //DEBUG - Print all image names and allocate as 'already clustered'
-        /*
-        int j = 0;
-        for (int i = 0; i < images.size(); i++){
-            std::cout << images[i]->get_name() << " into group " << j << std::endl;
-            images[i]->closest_mean = j;
-            if((i+1)%10 == 0)
-                j++;
-            if(j >= 10)
-                j = 0;
-        }
-        */
-
         update_centroid_locations();
 
-
-
-        //ORIGINAL INITILIZATION METHOD
-        /*
-        //Assign all images to ordering list [dist, index]
-        for (int i = 0; i < images.size(); i++){
-            ordering_list[i] = {images[i]->get_distance({origin}), (double) i};
-        }
-
-        //Order all images to be closest to furtherest from the origin
-        std::vector<double> tmp;
-        for (int i = 0; i < images.size()-1; i++){
-            for (int j = i; j < images.size(); j++){
-                if(ordering_list[i][0] > ordering_list[j][0]){
-                    tmp = ordering_list[i];
-                    ordering_list[i] = ordering_list[j];
-                    ordering_list[j] = tmp;
-                }
-            }
-        }
-
-        //Set the centroids to be evenly distributed amoungst the data point locations using dist from origin as measure
-        std::cout << "Determining centroid starting locations\n";
-        int gap_size = images.size()/num_means;
-        for (int i = 0; i < num_means; i++){
-            int index = (i*gap_size) >= 1 ? (i*gap_size) : (i*gap_size*num_means) % images.size();
-
-            location = images[(int) ordering_list[index][1]]->image_feature.location;
-
-            means.push_back({location});
-            means[i].print(); //debug
-        }
-        */
     }
 
 

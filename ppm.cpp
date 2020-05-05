@@ -9,9 +9,6 @@ namespace WYLJUS002{
         closest_mean = 0;
     }
 
-    ppm::~ppm(){        
-    }
-
     ppm::ppm(const std::string& file_name, const std::string& path, const bool& greyscale){
         ppm();
         this->file_name = file_name;
@@ -33,6 +30,7 @@ namespace WYLJUS002{
             std::cout << "Image file name not specified\n";
             exit(0);
         }
+        
         //Load image file
         std::ifstream in_file(("./" + relative_path + "/" + file_name).c_str(), std::ios::binary);
 
